@@ -5,16 +5,15 @@ PostPaidRates.maximum = 20;
 PostPaidRates.path = window.location.pathname.split( '/' );
 PostPaidRates.isSMBPage = (PostPaidRates.path.indexOf("business") == -1) ? false: true;
 PostPaidRates.isPending = (PostPaidRates.path.indexOf("pending.html") == -1) ? false: true;
-PostPaidRates.dataSrc ="data/current.json"; // default src points to Resi Current
+PostPaidRates.dataSrc ="data/retail/current.json"; // default src points to Resi Current
 PostPaidRates.errorThrown = false;
 
 PostPaidRates.queryPath = function(){
 	if( !this.isPending && !this.isSMBPage ){ // is Resi Current Rates
 		return;
-		//this.dataSrc = "/cdn/static.tvlistings.optimum.net/ool/static/prod/data/calling-rates/post-paid/residential/current-rates.json"
 	}
 	else if( this.isPending && !this.isSMBPage){ // is Resi Pending Rates
-		this.dataSrc = "data/pending.json"
+		this.dataSrc = "data/retail/pending.json"
 	}
 	else if( !this.isPending && this.isSMBPage){ // is Business Current Rates
 		this.dataSrc = "data/business/current.json"
@@ -31,15 +30,15 @@ PostPaidRates.returnMiscData = function(obj){
 	if(obj.showPending && !this.isPending){
 		$('.upcoming-message').html("New International Calling rates will be effective " + obj.pendingDate + ". Click <a href='pending.html'>here</a> to review these rates");
 	}
-	if(this.isPending){
+	else if(this.isPending){
 		$('.upcoming-message').text("International Calling rates subject to change at any time. New International Calling rates are effective on " + obj.pendingDate + ".");
 		$('.last-updated').text('Rates Effective: ' + obj.pendingDate);
 	}
-	if(!this.isPending){
+	else if(!this.isPending){
 		$('.last-updated').text('Rates Last Updated: ' + obj.lastUpdated);
 	}
 }
-PostPaidRates.queryPath();
+
 
 window.onload = function() {
 	for (var i = 0; i < onPageLoadFunctions.length; i++) {
@@ -134,7 +133,6 @@ onPageLoadFunctions.push(function($) {
     });
 
 	PostPaidRates.errorState = function(){
-		$('.onet-spinner').css('visibility', 'hidden');
 		this.$loadIndicator.text("Calling rates are unavailable at this time. Please check back later.");
 		this.$input.attr({disabled: true, placeholder: "rates unavailable"});
 	}
@@ -144,3 +142,4 @@ onPageLoadFunctions.push(function($) {
 	}
 
  }) // end onPageLoadFunctions()
+PostPaidRates.queryPath();
