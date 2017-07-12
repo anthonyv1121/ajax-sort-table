@@ -1,14 +1,14 @@
 var onPageLoadFunctions = [];
-var PostPaidRates = {};
-PostPaidRates.countries = [];
-PostPaidRates.maximum = 20;
-PostPaidRates.path = window.location.pathname.split( '/' );
-PostPaidRates.isSMBPage = (PostPaidRates.path.indexOf("business") == -1) ? false: true;
-PostPaidRates.isPending = (PostPaidRates.path.indexOf("pending.html") == -1) ? false: true;
-PostPaidRates.dataSrc ="data/retail/current.json"; // default src points to Resi Current
-PostPaidRates.errorThrown = false;
+var Rates = {};
+Rates.countries = [];
+Rates.maximum = 20;
+Rates.path = window.location.pathname.split( '/' );
+Rates.isSMBPage = (Rates.path.indexOf("business") == -1) ? false: true;
+Rates.isPending = (Rates.path.indexOf("pending.html") == -1) ? false: true;
+Rates.dataSrc ="data/retail/current.json"; // default src points to Resi Current
+Rates.errorThrown = false;
 
-PostPaidRates.queryPath = function(){
+Rates.queryPath = function(){
 	if( !this.isPending && !this.isSMBPage ){ // is Resi Current Rates
 		return;
 	}
@@ -23,10 +23,10 @@ PostPaidRates.queryPath = function(){
 	}
 	else if(this.path == undefined){
 		this.errorThrown = true;
-		PostPaidRates.errorState();
+		Rates.errorState();
 	}
 }
-PostPaidRates.returnMiscData = function(obj){
+Rates.returnMiscData = function(obj){
 	if(obj.showPending && !this.isPending){
 		$('.upcoming-message').html("New International Calling rates will be effective " + obj.pendingDate + ". Click <a href='pending.html'>here</a> to review these rates");
 	}
@@ -46,14 +46,14 @@ window.onload = function() {
 	}
 }
 onPageLoadFunctions.push(function($) {
-	PostPaidRates.$input = $('#country-search');
-	PostPaidRates.$onetTable = $('.onet-table');
-	PostPaidRates.$table = $('.post-paid-table');
-	PostPaidRates.$noresults = $('.no-results');
-	PostPaidRates.$loadIndicator = $('.loading-table');
-	PostPaidRates.$input.val('').attr('disabled', false);
+	Rates.$input = $('#country-search');
+	Rates.$onetTable = $('.onet-table');
+	Rates.$table = $('.post-paid-table');
+	Rates.$noresults = $('.no-results');
+	Rates.$loadIndicator = $('.loading-table');
+	Rates.$input.val('').attr('disabled', false);
 
-	PostPaidRates.load = function(){
+	Rates.load = function(){
 			$.ajax({
 			url: this.dataSrc,
 			cache:false,
@@ -64,9 +64,9 @@ onPageLoadFunctions.push(function($) {
 
 				for (var i=0; i<ratesData.length; i++) {
 					if(ratesData[i].Location && ratesData[i].Landline && ratesData[i].Mobile){
-						PostPaidRates.countries.push(ratesData[i].Location.toLowerCase());
+						Rates.countries.push(ratesData[i].Location.toLowerCase());
 						var featured;
-						if(i < PostPaidRates.maximum ){
+						if(i < Rates.maximum ){
 							featured = "featured"
 						}
 						else{
@@ -74,29 +74,29 @@ onPageLoadFunctions.push(function($) {
 						}
 						var html = $("<tr class = 'country " + featured + "' id='country-" + i + "'><td>" + ratesData[i].Location + "</td><td>" + ratesData[i].Landline + "</td><td>" + ratesData[i].Mobile + "</td></tr>");
 						//console.log(countries);
-						PostPaidRates.$table.append(html);
+						Rates.$table.append(html);
 					}
 					else{
 						this.errorThrown = true;
-						PostPaidRates.errorState();
+						Rates.errorState();
 						return;
 					}
 				}
-				PostPaidRates.$loadIndicator.hide();
-				PostPaidRates.$onetTable.removeClass('not-loaded');
-				PostPaidRates.returnMiscData(miscData);
+				Rates.$loadIndicator.hide();
+				Rates.$onetTable.removeClass('not-loaded');
+				Rates.returnMiscData(miscData);
 
 			},
 			error: function(jqXHR, textStatus, errorThrown){
-				PostPaidRates.errorThrown = true;
-				PostPaidRates.errorState();
+				Rates.errorThrown = true;
+				Rates.errorState();
 				//alert('Error: ' + textStatus + ' - ' + errorThrown);
 			}
 		});
 	};
 
-	PostPaidRates.$input.on("keyup", function() {
-		var p = PostPaidRates;
+	Rates.$input.on("keyup", function() {
+		var p = Rates;
 		console.log(p)
 		var rawInput = $(this).val();
 		var inputValue = rawInput.toLowerCase();
@@ -132,14 +132,14 @@ onPageLoadFunctions.push(function($) {
         $(this).css('border','1px solid #bfbfbf');
     });
 
-	PostPaidRates.errorState = function(){
+	Rates.errorState = function(){
 		this.$loadIndicator.text("Calling rates are unavailable at this time. Please check back later.");
 		this.$input.attr({disabled: true, placeholder: "rates unavailable"});
 	}
 
-	if(!PostPaidRates.errorThrown){
-		PostPaidRates.load();
+	if(!Rates.errorThrown){
+		Rates.load();
 	}
 
  }) // end onPageLoadFunctions()
-PostPaidRates.queryPath();
+Rates.queryPath();
