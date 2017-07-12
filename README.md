@@ -1,2 +1,2 @@
 # ajax-sort-table
-Simple data table with AJAX with data sorting via an input field.
+Data table parsed from JSON with AJAX. Simple data sorting from a text input field.
